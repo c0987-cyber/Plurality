@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0b10">
+<title>Plural</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌀</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none}
+html,body,#root{position:fixed;width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:'Outfit',sans-serif;background:#0a0b10;color:#e4e6f0;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+input,textarea,button{font-family:inherit;-webkit-user-select:text;user-select:text}
+.msg-text{-webkit-user-select:text;user-select:text}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#252842;border-radius:2px}
+::placeholder{color:#4d5268}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{0%{transform:scale(.92);opacity:0}100%{transform:scale(1);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fi{animation:fi .2s ease both}.pop{animation:pop .2s ease both}.hov:active{opacity:0.7}
+.scr{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.scrx{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+var useState=React.useState,useEffect=React.useEffect,useCallback=React.useCallback,useRef=React.useRef,useMemo=React.useMemo;
+var SB="https://mnwkluvexuxzdxuhpzwc.supabase.co",SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1ud2tsdXZleHV4emR4dWhwendjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMjgzNDAsImV4cCI6MjA5MDkwNDM0MH0.9I7G0TVQd9T88MSuKU28TdJRY78oJ0u0I0rTzRhkLwU";
+var LS={g:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},s:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}},d:function(k){try{localStorage.removeItem(k)}catch(e){}}};
+var hd=function(t){return{apikey:SK,Authorization:"Bearer "+(t||SK),"Content-Type":"application/json",Prefer:"return=representation"}};
+var A={
+  signup:async function(e,p){var r=await fetch(SB+"/auth/v1/signup",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:e,password:p})});var d=await r.json();if(d.error||d.msg)throw new Error((d.error&&d.error.message)||d.msg);return d},
+  login:async function(e,p){var r=await fetch(SB+"/auth/v1/token?grant_type=password",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({email:e,password:p})});var d=await r.json();if(d.error)throw new Error(d.error_description||d.error);return d},
+  refresh:async function(rt){var r=await fetch(SB+"/auth/v1/token?grant_type=refresh_token",{method:"POST",headers:{apikey:SK,"Content-Type":"application/json"},body:JSON.stringify({refresh_token:rt})});var d=await r.json();if(d.error)throw new Error(d.error);return d},
+  g:async function(t,q,tk){var r=await fetch(SB+"/rest/v1/"+t+"?"+(q||""),{headers:hd(tk)});if(!r.ok){if(r.status===401)throw new Error("AUTH");var e=await r.json();throw new Error(e.message||"Fail")}return r.json()},
+  p:async function(t,d,tk){var r=await fetch(SB+"/rest/v1/"+t,{method:"POST",headers:hd(tk),body:JSON.stringify(d)});if(!r.ok){var e=await r.json();throw new Error(e.message||"Fail")}return r.json()},
+  pa:async function(t,q,d,tk){var r=await fetch(SB+"/rest/v1/"+t+"?"+q,{method:"PATCH",headers:hd(tk),body:JSON.stringify(d)});if(!r.ok){var e=await r.json();throw new Error(e.message||"Fail")}return r.json()},
+  dl:async function(t,q,tk){var r=await fetch(SB+"/rest/v1/"+t+"?"+q,{method:"DELETE",headers:hd(tk)});if(!r.ok){var e=await r.json();throw new Error(e.message||"Fail")}}
+};
+
+// 30 colors
+var COLS=["#ff6b8a","#ffa26b","#ffd66b","#6bffa2","#6bcfff","#b46bff","#ff6bdb","#6bffef","#ff8f6b","#a5ff6b","#ff4757","#ff6348","#ffa502","#2ed573","#1e90ff","#a55eea","#ff6eb4","#7bed9f","#70a1ff","#eccc68","#e056fd","#30336b","#6ab04c","#22a6b3","#f8a5c2","#778beb","#cf6a87","#63cdda","#ea8685","#badc58"];
+// 100+ emojis
+var EMO=["🌀","🌙","⭐","🔥","💜","🌊","🌸","⚡","🦋","🍄","🎭","💫","🌿","❄️","🎪","☁️","🪐","🫧","🐱","🐺","🦊","🐻","🐰","🐸","🐲","🦄","🌹","🍀","💎","🎵","🎮","🗡️","🛡️","👑","🧸","🌻","🍂","🎨","🧿","🔮","🪷","🌈","🦇","🕊️","🐾","💀","👻","🤍","🖤","❤️","💙","💚","💛","🧡","💗","🩵","🐍","🦋","🌺","🍁","🎲","🧊","🔱","⚜️","🏵️","🪻","🌾","🍃","🦢","🐝","🦑","🐚","🪸","🦎","🐈","🐇","🦝","🐦","🪶","🌲","🏔️","🌋","🎸","🎹","🎻","🖤","🤖","👾","🎃","🦷","🧬","💊","🔬","📡","🗝️","⚙️","🧭","🪬","📿","🎴","🀄","♟️","🧩","🪡","🧶","🛸","🌑","🌕","☄️","🪨"];
+var GEMO=["🌐","💬","🏠","🎪","🌈","🔮","🎵","🌺","⚔️","🧩","🏰","🌌","🎯","🍵","🔥"];
+var MOODS=["","😊","😔","😤","😴","🥰","😰","🤔","😈","🌟","💪","😵‍💫","🥺","😎","🤗","💜"];
+function gc(){var c="ABCDEFGHJKLMNPQRSTUVWXYZ23456789",r="";for(var i=0;i<6;i++)r+=c[Math.floor(Math.random()*c.length)];return r}
+function ago(d){var s=Math.floor((Date.now()-new Date(d).getTime())/1000);if(s<60)return"now";if(s<3600)return Math.floor(s/60)+"m";if(s<86400)return Math.floor(s/3600)+"h";return Math.floor(s/86400)+"d"}
+function dayLabel(d){var dt=new Date(d),t=new Date();if(dt.toDateString()===t.toDateString())return"Today";var y=new Date(t);y.setDate(y.getDate()-1);if(dt.toDateString()===y.toDateString())return"Yesterday";return dt.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}
+
+var C={bg:"#0a0b10",s1:"#111219",s2:"#16171f",s3:"#1c1d2a",s4:"#232536",bd:"#252842",bd2:"#353860",tx:"#e4e6f0",t2:"#8890a8",t3:"#4d5268",ac:"#b4a5ff",ok:"#6bffa2",wn:"#ffd66b",er:"#ff6b8a",side:"#0d0e14"};
+var IS={width:"100%",padding:"11px 14px",background:C.s2,border:"1px solid "+C.bd,borderRadius:10,color:C.tx,fontSize:15,outline:"none"};
+var BT={padding:"11px 20px",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer",display:"inline-flex",alignItems:"center",justifyContent:"center",gap:7};
+
+// SVG Icons
+function Ic({d,sz,c,sw}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth={sw||2} strokeLinecap="round" strokeLinejoin="round"><path d={d}/></svg>}
+function IMenu({sz,c}){return <Ic d="M3 12h18M3 6h18M3 18h18" sz={sz} c={c}/>}
+function IBack({sz,c}){return <Ic d="M19 12H5M12 19l-7-7 7-7" sz={sz} c={c}/>}
+function ISend({sz,c}){return <Ic d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" sz={sz} c={c}/>}
+function IPlus({sz,c}){return <Ic d="M12 5v14M5 12h14" sz={sz} c={c}/>}
+function ISearch({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>}
+function ICheck({sz,c}){return <Ic d="M20 6L9 17l-5-5" sz={sz} c={c}/>}
+function IX({sz,c}){return <Ic d="M18 6L6 18M6 6l12 12" sz={sz} c={c}/>}
+function ICopy({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>}
+function IEdit({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>}
+function ITrash({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>}
+function ILogOut({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>}
+function IUserPlus({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>}
+function IUserX({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>}
+function IMsg({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>}
+function IChevDown({sz,c}){return <Ic d="M6 9l6 6 6-6" sz={sz} c={c}/>}
+function IChevRight({sz,c}){return <Ic d="M9 18l6-6-6-6" sz={sz} c={c}/>}
+function ISettings({sz,c}){return <svg width={sz||16} height={sz||16} viewBox="0 0 24 24" fill="none" stroke={c||"currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>}
+
+function Spin({sz}){return <svg width={sz||18} height={sz||18} viewBox="0 0 24 24" fill="none" stroke={C.ac} strokeWidth="2" style={{animation:"spin 1s linear infinite"}}><path d="M21 12a9 9 0 11-6.219-8.56"/></svg>}
+function Badge({a,sz,on,onClick,st}){var s=sz||34;return <div onClick={onClick} style={Object.assign({width:s,height:s,borderRadius:"50%",background:a.color+"20",border:"2px solid "+(on?a.color:"transparent"),display:"flex",alignItems:"center",justifyContent:"center",fontSize:s*.44,cursor:onClick?"pointer":"default",transition:"all .15s",flexShrink:0,boxShadow:on?"0 0 10px "+a.color+"33":"none"},st||{})}>{a.avatar_emoji}</div>}
+function Toast({msg,type,onClose}){useEffect(function(){var x=setTimeout(onClose,3000);return function(){clearTimeout(x)}},[]);return <div className="pop" style={{position:"fixed",top:16,left:"50%",transform:"translateX(-50%)",padding:"9px 20px",borderRadius:10,background:type==="error"?C.er:type==="success"?C.ok:C.ac,color:"#0a0b10",fontWeight:600,fontSize:13,zIndex:9999}}>{msg}</div>}
+
+// Swipe hook
+function useSwipe(onRight,onLeft){
+  var sx=useRef(0),sy=useRef(0),tr=useRef(false);
+  return useMemo(function(){return{
+    onTouchStart:function(e){sx.current=e.touches[0].clientX;sy.current=e.touches[0].clientY;tr.current=true},
+    onTouchEnd:function(e){if(!tr.current)return;tr.current=false;var dx=e.changedTouches[0].clientX-sx.current;var dy=Math.abs(e.changedTouches[0].clientY-sy.current);if(Math.abs(dx)>60&&dy<80){if(dx>0&&onRight)onRight();if(dx<0&&onLeft)onLeft()}}
+  }},[onRight,onLeft])
+}
+
+// ===== AUTH =====
+function Auth({onAuth}){
+  var _m=useState("login"),m=_m[0],setM=_m[1];var _e=useState(""),email=_e[0],setEmail=_e[1];var _p=useState(""),pw=_p[0],setPw=_p[1];var _l=useState(false),ld=_l[0],setLd=_l[1];var _er=useState(""),err=_er[0],setErr=_er[1];
+  var go=async function(){if(!email||!pw)return setErr("Fill in both fields");if(pw.length<6)return setErr("6+ chars");setLd(true);setErr("");try{if(m==="signup"){var d=await A.signup(email,pw);if(d.access_token)onAuth(d);else{setM("login");setErr("Check email, then log in!")}}else onAuth(await A.login(email,pw))}catch(e){setErr(e.message)}setLd(false)};
+  return <div className="scr" style={{height:"100%",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:24,background:"radial-gradient(ellipse at 50% 0%,#1a1040 0%,"+C.bg+" 70%)"}}>
+    <div className="fi" style={{width:"100%",maxWidth:340}}>
+      <div style={{textAlign:"center",marginBottom:40}}>
+        <svg width="56" height="56" viewBox="0 0 56 56" style={{marginBottom:8}}><circle cx="28" cy="28" r="26" fill="none" stroke={C.ac} strokeWidth="2.5" opacity=".3"/><path d="M28 8a20 20 0 0114.14 34.14" fill="none" stroke={C.ac} strokeWidth="2.5" strokeLinecap="round"/><circle cx="28" cy="28" r="8" fill="none" stroke={C.ac} strokeWidth="2"/></svg>
+        <h1 style={{fontSize:32,fontWeight:800,letterSpacing:"-1px"}}>Plural</h1><p style={{color:C.t2,fontSize:14,marginTop:6}}>A space for every part of you</p>
+      </div>
+      <div style={{display:"flex",gap:4,marginBottom:20,background:C.s2,borderRadius:10,padding:3}}>{["login","signup"].map(function(x){return <button key={x} onClick={function(){setM(x);setErr("")}} style={Object.assign({},BT,{flex:1,padding:"9px 0",background:m===x?C.s4:"transparent",color:m===x?C.tx:C.t3,borderRadius:8,fontSize:13})}>{x==="login"?"Log In":"Sign Up"}</button>})}</div>
+      <div style={{display:"flex",flexDirection:"column",gap:10}}>
+        <input type="email" placeholder="Email" value={email} onChange={function(e){setEmail(e.target.value)}} style={IS} onKeyDown={function(e){if(e.key==="Enter")go()}}/>
+        <input type="password" placeholder="Password" value={pw} onChange={function(e){setPw(e.target.value)}} style={IS} onKeyDown={function(e){if(e.key==="Enter")go()}}/>
+        {err&&<p style={{color:err.indexOf("confirm")>-1?C.wn:C.er,fontSize:12,textAlign:"center"}}>{err}</p>}
+        <button onClick={go} disabled={ld} style={Object.assign({},BT,{width:"100%",marginTop:4,background:C.ac,color:"#0a0b10",padding:"13px",fontSize:15,borderRadius:12,opacity:ld?.6:1})}>{ld?<Spin/>:m==="login"?"Log In":"Create Account"}</button>
+      </div>
+    </div>
+  </div>
+}
+
+// ===== SETUP =====
+function Setup({token,userId,onDone}){
+  var _st=useState(1),step=_st[0],setStep=_st[1];var _sn=useState(""),sn=_sn[0],setSn=_sn[1];var _an=useState(""),an=_an[0],setAn=_an[1];var _ap=useState(""),ap=_ap[0],setAp=_ap[1];var _ac2=useState(COLS[5]),ac2=_ac2[0],setAc2=_ac2[1];var _ae=useState("🌀"),ae=_ae[0],setAe=_ae[1];var _ld=useState(false),ld=_ld[0],setLd=_ld[1];
+  var finish=async function(){if(!sn.trim()||!an.trim())return;setLd(true);try{var r1=await A.p("systems",{user_id:userId,display_name:sn.trim(),system_code:gc()},token);var r2=await A.p("alters",{system_id:r1[0].id,name:an.trim(),pronouns:ap.trim(),color:ac2,avatar_emoji:ae},token);onDone(r1[0],[r2[0]])}catch(e){try{var r3=await A.p("systems",{user_id:userId,display_name:sn.trim(),system_code:gc()},token);var r4=await A.p("alters",{system_id:r3[0].id,name:an.trim(),pronouns:ap.trim(),color:ac2,avatar_emoji:ae},token);onDone(r3[0],[r4[0]])}catch(e2){alert(e2.message)}}setLd(false)};
+  return <div className="scr" style={{height:"100%",display:"flex",alignItems:"center",justifyContent:"center",padding:24}}>
+    <div className="fi" style={{width:"100%",maxWidth:380}}>
+      <div style={{textAlign:"center",marginBottom:28}}><div style={{display:"flex",justifyContent:"center",gap:6,marginBottom:12}}>{[1,2].map(function(i){return <div key={i} style={{width:40,height:4,borderRadius:2,background:step>=i?C.ac:C.bd}}/>})}</div><h2 style={{fontSize:22,fontWeight:600}}>{step===1?"Name your system":"Create your first alter"}</h2></div>
+      {step===1?<div style={{display:"flex",flexDirection:"column",gap:14}}>
+        <input placeholder="e.g. The Aurora System" value={sn} onChange={function(e){setSn(e.target.value)}} style={IS} onKeyDown={function(e){if(e.key==="Enter"&&sn.trim())setStep(2)}}/>
+        <button onClick={function(){setStep(2)}} disabled={!sn.trim()} style={Object.assign({},BT,{background:C.ac,color:"#0a0b10",opacity:sn.trim()?1:.4})}>Next</button>
+      </div>:<div style={{display:"flex",flexDirection:"column",gap:12}}>
+        <input placeholder="Alter name" value={an} onChange={function(e){setAn(e.target.value)}} style={IS}/>
+        <input placeholder="Pronouns (optional)" value={ap} onChange={function(e){setAp(e.target.value)}} style={IS}/>
+        <div><p style={{fontSize:11,color:C.t2,marginBottom:5}}>Color</p><div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{COLS.map(function(c){return <div key={c} onClick={function(){setAc2(c)}} style={{width:22,height:22,borderRadius:"50%",background:c,cursor:"pointer",border:ac2===c?"2px solid white":"2px solid transparent"}}/>})}</div></div>
+        <div><p style={{fontSize:11,color:C.t2,marginBottom:5}}>Emoji</p><div className="scr" style={{display:"flex",gap:3,flexWrap:"wrap",maxHeight:110}}>{EMO.map(function(em){return <div key={em} onClick={function(){setAe(em)}} style={{width:28,height:28,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:14,cursor:"pointer",background:ae===em?C.s3:"transparent"}}>{em}</div>})}</div></div>
+        <div style={{display:"flex",gap:8,marginTop:4}}>
+          <button onClick={function(){setStep(1)}} style={Object.assign({},BT,{flex:1,background:"transparent",color:C.t2,border:"1px solid "+C.bd})}>Back</button>
+          <button onClick={finish} disabled={!an.trim()||ld} style={Object.assign({},BT,{flex:2,background:C.ac,color:"#0a0b10",opacity:an.trim()&&!ld?1:.4})}>{ld?<Spin/>:"Continue"}</button>
+        </div>
+      </div>}
+    </div>
+  </div>
+}
+
+// ===== MAIN APP =====
+function Main({session,system:initSys,alters:initAlts,onLogout,onRefresh}){
+  var tk=session.access_token;
+  var _sys=useState(initSys),sys=_sys[0];
+  var _alters=useState(initAlts),alters=_alters[0],setAlters=_alters[1];
+  var _active=useState(initAlts[0]),active=_active[0],setActive=_active[1];
+  var _conns=useState([]),conns=_conns[0],setConns=_conns[1];
+  var _ca=useState({}),connAlts=_ca[0],setConnAlts=_ca[1];
+  var _pending=useState([]),pending=_pending[0],setPending=_pending[1];
+  var _groups=useState([]),groups=_groups[0],setGroups=_groups[1];
+  var _gm=useState({}),groupMembers=_gm[0],setGroupMembers=_gm[1];
+  var _drawer=useState(false),drawer=_drawer[0],setDrawer=_drawer[1];
+  var _drawerExp=useState({}),drawerExp=_drawerExp[0],setDrawerExp=_drawerExp[1]; // expanded connections in drawer
+  var _view=useState("home"),view=_view[0],setView=_view[1];
+  // Chat target: {system, myAlter, theirAlter}
+  var _ct=useState(null),chatTarget=_ct[0],setChatTarget=_ct[1];
+  var _ag=useState(null),activeGroup=_ag[0],setActiveGroup=_ag[1];
+  var _msgs=useState([]),msgs=_msgs[0],setMsgs=_msgs[1];
+  var _mi=useState(""),msgIn=_mi[0],setMsgIn=_mi[1];
+  var _sending=useState(false),sending=_sending[0],setSending=_sending[1];
+  var _toast=useState(null),toast=_toast[0],setToast=_toast[1];
+  var _sc=useState(""),searchCode=_sc[0],setSearchCode=_sc[1];
+  var _sr=useState(null),searchRes=_sr[0],setSearchRes=_sr[1];
+  var _sl=useState(false),searchLd=_sl[0],setSearchLd=_sl[1];
+  var _na=useState({name:"",pronouns:"",color:COLS[0],avatar_emoji:"⭐"}),newAlt=_na[0],setNewAlt=_na[1];
+  var _ed=useState(null),editing=_ed[0],setEditing=_ed[1];
+  var _ng=useState({name:"",emoji:"🌐",color:COLS[4],members:[]}),newGroup=_ng[0],setNewGroup=_ng[1];
+  var _lastMsgs=useState({}),lastMsgs=_lastMsgs[0],setLastMsgs=_lastMsgs[1];
+  var _chatTabOpen=useState(false),chatTabOpen=_chatTabOpen[0],setChatTabOpen=_chatTabOpen[1]; // expanded conversation selector in chat
+  var endRef=useRef(null);var pollRef=useRef(null);
+
+  var inChat=view==="chat"||view==="groupChat";
+
+  // Swipe: right opens drawer or exits chat, left closes drawer
+  var swipe=useSwipe(
+    function(){if(inChat){setView("home");clearInterval(pollRef.current)}else if(!drawer)setDrawer(true)}, // swipe right
+    function(){if(drawer)setDrawer(false)} // swipe left
+  );
+
+  // ---- DATA LOADING ----
+  var loadConns=useCallback(async function(){try{
+    var ac2=await A.g("connections","or=(requester_id.eq."+sys.id+",receiver_id.eq."+sys.id+")&status=eq.accepted",tk);
+    var pd=await A.g("connections","receiver_id=eq."+sys.id+"&status=eq.pending",tk);
+    var allIds=ac2.flatMap(function(c){return[c.requester_id,c.receiver_id]}).concat(pd.map(function(p){return p.requester_id}));
+    var ids=allIds.filter(function(x,i,a){return x!==sys.id&&a.indexOf(x)===i});
+    if(ids.length>0){
+      var ss=await A.g("systems","id=in.("+ids.join(",")+")",tk);var aa=await A.g("alters","system_id=in.("+ids.join(",")+")",tk);
+      var am={};aa.forEach(function(a){if(!am[a.system_id])am[a.system_id]=[];am[a.system_id].push(a)});
+      setConns(ac2.map(function(c){var o=c.requester_id===sys.id?c.receiver_id:c.requester_id;return Object.assign({},c,{otherSystem:ss.find(function(s){return s.id===o})})}).filter(function(c){return c.otherSystem}));
+      setPending(pd.map(function(p){return Object.assign({},p,{otherSystem:ss.find(function(s){return s.id===p.requester_id})})}).filter(function(p){return p.otherSystem}));
+      setConnAlts(am);
+    }else{setConns([]);setPending(pd)}
+  }catch(e){if(e.message==="AUTH"&&onRefresh)onRefresh()}},[sys.id,tk]);
+
+  var loadGroups=useCallback(async function(){try{var mg=await A.g("group_members","system_id=eq."+sys.id+"&select=group_id",tk);if(mg.length>0){var gids=mg.map(function(g){return g.group_id});var gs=await A.g("groups","id=in.("+gids.join(",")+")",tk);setGroups(gs);var mb=await A.g("group_members","group_id=in.("+gids.join(",")+")",tk);var mm={};mb.forEach(function(m){if(!mm[m.group_id])mm[m.group_id]=[];mm[m.group_id].push(m)});setGroupMembers(mm)}else setGroups([])}catch(e){}},[sys.id,tk]);
+
+  useEffect(function(){loadConns();loadGroups()},[loadConns,loadGroups]);
+  useEffect(function(){var iv=setInterval(loadConns,10000);return function(){clearInterval(iv)}},[loadConns]);
+
+  // Last messages PER ACTIVE ALTER
+  useEffect(function(){
+    if(!conns.length||!active)return;
+    var loadLast=async function(){var lm={};var myId=active.id;
+      for(var i=0;i<conns.length;i++){var s=conns[i].otherSystem;var sa=connAlts[s.id]||[];if(!sa.length)continue;var tIds=sa.map(function(a){return a.id});
+        try{var r=await A.g("messages","or=(and(sender_alter_id.eq."+myId+",receiver_alter_id.in.("+tIds.join(",")+")),and(sender_alter_id.in.("+tIds.join(",")+"),receiver_alter_id.eq."+myId+"))"+"&order=created_at.desc&limit=1",tk);if(r.length)lm[s.id]=r[0]}catch(e){}}
+      setLastMsgs(lm)};
+    loadLast();var iv=setInterval(loadLast,8000);return function(){clearInterval(iv)}
+  },[conns,connAlts,active,tk]);
+
+  // Poll chat messages
+  useEffect(function(){
+    if(view!=="chat"||!chatTarget)return;
+    var load=async function(){try{var my=chatTarget.myAlter.id,th=chatTarget.theirAlter.id;setMsgs(await A.g("messages","or=(and(sender_alter_id.eq."+my+",receiver_alter_id.eq."+th+"),and(sender_alter_id.eq."+th+",receiver_alter_id.eq."+my+"))&order=created_at.asc",tk))}catch(e){}};
+    load();pollRef.current=setInterval(load,2500);return function(){clearInterval(pollRef.current)}
+  },[view,chatTarget&&chatTarget.myAlter.id,chatTarget&&chatTarget.theirAlter.id,tk]);
+
+  useEffect(function(){
+    if(view!=="groupChat"||!activeGroup)return;
+    var load=async function(){try{setMsgs(await A.g("group_messages","group_id=eq."+activeGroup.id+"&order=created_at.asc",tk))}catch(e){}};
+    load();pollRef.current=setInterval(load,2500);return function(){clearInterval(pollRef.current)}
+  },[view,activeGroup&&activeGroup.id,tk]);
+
+  useEffect(function(){if(endRef.current)endRef.current.scrollIntoView({behavior:"smooth"})},[msgs]);
+
+  // ---- ACTIONS ----
+  var switchAlter=function(a){setActive(a)};
+
+  // Open a specific DM conversation (myAlter + theirAlter)
+  var openDM=function(myAlt,theirAlt,otherSys){
+    setChatTarget({system:otherSys,myAlter:myAlt,theirAlter:theirAlt});
+    setActive(myAlt); // auto-switch to that alter
+    setMsgs([]);setView("chat");setDrawer(false);setChatTabOpen(false);
+  };
+
+  // Open DM with default (active alter + their first alter)
+  var openDMDefault=function(otherSys){
+    var sa=connAlts[otherSys.id]||[];
+    if(!sa.length)return;
+    openDM(active,sa[0],otherSys);
+  };
+
+  // Switch conversation within chat (changes alter pair)
+  var switchConvo=function(myAlt,theirAlt){
+    setChatTarget(function(prev){return{system:prev.system,myAlter:myAlt,theirAlter:theirAlt}});
+    setActive(myAlt);
+    setMsgs([]);setChatTabOpen(false);
+  };
+
+  var openGrp=function(g){setActiveGroup(g);setMsgs([]);setView("groupChat");setDrawer(false)};
+
+  var sendDM=async function(){if(!msgIn.trim()||!chatTarget||sending)return;var c=msgIn.trim();setMsgIn("");setSending(true);try{var r=await A.p("messages",{sender_alter_id:chatTarget.myAlter.id,receiver_alter_id:chatTarget.theirAlter.id,content:c},tk);setMsgs(function(p){return p.concat([r[0]])})}catch(e){setToast({msg:"Send failed",type:"error"})}setSending(false)};
+  var sendGM=async function(){if(!msgIn.trim()||!activeGroup||sending)return;var c=msgIn.trim();setMsgIn("");setSending(true);try{var r=await A.p("group_messages",{group_id:activeGroup.id,sender_alter_id:active.id,content:c},tk);setMsgs(function(p){return p.concat([r[0]])})}catch(e){setToast({msg:"Send failed",type:"error"})}setSending(false)};
+  var deleteMsg=async function(id){try{await A.dl("messages","id=eq."+id,tk);setMsgs(function(p){return p.filter(function(m){return m.id!==id})})}catch(e){}};
+  var searchSys=async function(){if(!searchCode.trim())return;setSearchLd(true);setSearchRes(null);try{var r=await A.g("systems","system_code=eq."+searchCode.trim().toUpperCase(),tk);if(!r.length)setSearchRes({none:true});else if(r[0].id===sys.id)setSearchRes({self:true});else{var a=await A.g("alters","system_id=eq."+r[0].id,tk);setSearchRes({sys:r[0],alts:a})}}catch(e){}setSearchLd(false)};
+  var sendReq=async function(id){try{await A.p("connections",{requester_id:sys.id,receiver_id:id},tk);setToast({msg:"Request sent!",type:"success"});setSearchRes(null);setSearchCode("");loadConns()}catch(e){setToast({msg:"Already connected",type:"error"})}};
+  var acceptReq=async function(id){try{await A.pa("connections","id=eq."+id,{status:"accepted"},tk);setToast({msg:"Connected!",type:"success"});loadConns()}catch(e){}};
+  var rejectReq=async function(id){try{await A.dl("connections","id=eq."+id,tk);loadConns()}catch(e){}};
+  var unfriend=async function(connId,name){if(!confirm("Unfriend "+name+"?"))return;try{await A.dl("connections","id=eq."+connId,tk);setToast({msg:"Unfriended",type:"success"});loadConns()}catch(e){}};
+  var addAlterFn=async function(){if(!newAlt.name.trim())return;try{var r=await A.p("alters",{system_id:sys.id,name:newAlt.name.trim(),pronouns:newAlt.pronouns,color:newAlt.color,avatar_emoji:newAlt.avatar_emoji},tk);setAlters(function(p){return p.concat([r[0]])});setNewAlt({name:"",pronouns:"",color:COLS[Math.floor(Math.random()*COLS.length)],avatar_emoji:"⭐"});setView("home");setToast({msg:r[0].name+" added!",type:"success"})}catch(e){setToast({msg:e.message,type:"error"})}};
+  var delAlter=async function(id){if(alters.length<=1)return;try{await A.dl("alters","id=eq."+id,tk);var u=alters.filter(function(a){return a.id!==id});setAlters(u);if(active.id===id)setActive(u[0])}catch(e){}};
+  var saveEdit=async function(){if(!editing)return;try{var r=await A.pa("alters","id=eq."+editing.id,{name:editing.name,pronouns:editing.pronouns,color:editing.color,avatar_emoji:editing.avatar_emoji},tk);setAlters(function(p){return p.map(function(a){return a.id===r[0].id?r[0]:a})});if(active.id===r[0].id)setActive(r[0]);setEditing(null);setToast({msg:"Saved!",type:"success"})}catch(e){}};
+  var createGroup=async function(){if(!newGroup.name.trim())return;try{var r=await A.p("groups",{name:newGroup.name.trim(),emoji:newGroup.emoji,color:newGroup.color,created_by:sys.id},tk);await A.p("group_members",{group_id:r[0].id,system_id:sys.id},tk);for(var i=0;i<newGroup.members.length;i++){await A.p("group_members",{group_id:r[0].id,system_id:newGroup.members[i]},tk)}setNewGroup({name:"",emoji:"🌐",color:COLS[4],members:[]});setView("home");loadGroups();setToast({msg:"Group created!",type:"success"})}catch(e){setToast({msg:e.message,type:"error"})}};
+  var copyCode=function(){if(navigator.clipboard)navigator.clipboard.writeText(sys.system_code);setToast({msg:"Copied!",type:"success"})};
+  var nav=function(v){setView(v);setDrawer(false)};
+  var allAlters=useMemo(function(){var m={};alters.forEach(function(a){m[a.id]=a});Object.values(connAlts).flat().forEach(function(a){m[a.id]=a});return m},[alters,connAlts]);
+  var sortedConns=useMemo(function(){return conns.slice().sort(function(a,b){var la=lastMsgs[a.otherSystem.id];var lb=lastMsgs[b.otherSystem.id];if(!la&&!lb)return 0;if(!la)return 1;if(!lb)return-1;return new Date(lb.created_at)-new Date(la.created_at)})},[conns,lastMsgs]);
+
+  return (
+    <div style={{height:"100%",display:"flex",overflow:"hidden"}} {...swipe}>
+      {toast&&<Toast msg={toast.msg} type={toast.type} onClose={function(){setToast(null)}}/>}
+
+      {/* DRAWER OVERLAY */}
+      {drawer&&<div onClick={function(){setDrawer(false)}} style={{position:"fixed",inset:0,background:"rgba(0,0,0,.5)",zIndex:50}}/>}
+
+      {/* SIDE DRAWER */}
+      <div style={{position:"fixed",left:0,top:0,bottom:0,width:285,background:C.side,borderRight:"1px solid "+C.bd,zIndex:51,transform:drawer?"translateX(0)":"translateX(-100%)",transition:"transform .25s cubic-bezier(.4,0,.2,1)",display:"flex",flexDirection:"column"}}>
+        {/* System + alter switcher */}
+        <div style={{padding:12,borderBottom:"1px solid "+C.bd}}>
+          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:8}}>
+            <Badge a={active} sz={32} on/>
+            <div style={{flex:1,minWidth:0}}><div style={{fontWeight:700,fontSize:14,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{sys.display_name}</div><div style={{fontSize:10,color:C.t3,display:"flex",alignItems:"center",gap:4}}><span style={{letterSpacing:1}}>{sys.system_code}</span><button className="hov" onClick={copyCode} style={{background:"none",border:"none",cursor:"pointer",padding:0,display:"flex"}}><ICopy sz={10} c={C.t3}/></button></div></div>
+          </div>
+          <div className="scrx" style={{display:"flex",gap:4,paddingBottom:2}}>
+            {alters.map(function(a){return <div key={a.id} onClick={function(){switchAlter(a)}} style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,cursor:"pointer",flexShrink:0}}>
+              <Badge a={a} sz={24} on={active.id===a.id}/>
+              <span style={{fontSize:7,color:active.id===a.id?a.color:C.t3,fontWeight:active.id===a.id?700:400}}>{a.name.substring(0,4)}</span>
+            </div>})}
+            <div onClick={function(){nav("addAlter")}} style={{width:24,height:24,borderRadius:"50%",border:"1px dashed "+C.bd,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",flexShrink:0}}><IPlus sz={8} c={C.t3}/></div>
+          </div>
+        </div>
+
+        {/* Connections with dropdowns */}
+        <div className="scr" style={{flex:1,padding:"6px 4px"}}>
+          <p style={{fontSize:9,color:C.t3,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700,padding:"6px 10px"}}>Connections</p>
+          {sortedConns.map(function(conn){
+            var s=conn.otherSystem;var sa=connAlts[s.id]||[];var exp=drawerExp[s.id];
+            return <div key={conn.id}>
+              <div className="hov" style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",borderRadius:8,cursor:"pointer"}} onClick={function(){setDrawerExp(function(p){var n=Object.assign({},p);n[s.id]=!p[s.id];return n})}}>
+                <div style={{width:28,height:28,borderRadius:"50%",background:C.s3,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:C.t2}}>{s.display_name.charAt(0)}</div>
+                <span style={{flex:1,fontWeight:500,fontSize:13,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.display_name}</span>
+                <span style={{fontSize:10,color:C.t3}}>{sa.length}</span>
+                {exp?<IChevDown sz={12} c={C.t3}/>:<IChevRight sz={12} c={C.t3}/>}
+              </div>
+              {exp&&<div style={{paddingLeft:12,paddingBottom:4}}>
+                {/* Group by my alter */}
+                {alters.map(function(myAlt){return <div key={myAlt.id}>
+                  <p style={{fontSize:9,color:myAlt.color,fontWeight:600,padding:"4px 8px",opacity:.7}}>{myAlt.name}</p>
+                  {sa.map(function(theirAlt){return <div key={theirAlt.id} className="hov" onClick={function(){openDM(myAlt,theirAlt,s)}} style={{display:"flex",alignItems:"center",gap:6,padding:"5px 8px",borderRadius:6,cursor:"pointer",fontSize:12}}>
+                    <Badge a={myAlt} sz={16}/><span style={{color:C.t3}}>+</span><Badge a={theirAlt} sz={16}/><span style={{color:C.t2,flex:1}}>{theirAlt.name}</span>
+                  </div>})}
+                </div>})}
+                <button className="hov" onClick={function(){unfriend(conn.id,s.display_name)}} style={Object.assign({},BT,{width:"100%",padding:"5px 8px",background:"transparent",border:"none",color:C.er,fontSize:11,justifyContent:"flex-start",gap:5,marginTop:2})}><IUserX sz={11}/>Unfriend</button>
+              </div>}
+            </div>
+          })}
+          <button className="hov" onClick={function(){nav("addContact")}} style={Object.assign({},BT,{width:"100%",padding:"7px 10px",background:"transparent",color:C.t3,border:"none",fontSize:12,justifyContent:"flex-start",gap:6})}><IUserPlus sz={13}/>Add system</button>
+
+          <div style={{height:1,background:C.bd,margin:"6px 8px"}}/>
+          <p style={{fontSize:9,color:C.t3,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700,padding:"4px 10px"}}>Groups</p>
+          {groups.map(function(g){return <div key={g.id} className="hov" onClick={function(){openGrp(g)}} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 10px",borderRadius:8,cursor:"pointer"}}>
+            <span style={{fontSize:14}}>{g.emoji}</span><span style={{fontWeight:500,fontSize:13}}>{g.name}</span>
+          </div>})}
+          <button className="hov" onClick={function(){nav("addGroup")}} style={Object.assign({},BT,{width:"100%",padding:"7px 10px",background:"transparent",color:C.t3,border:"none",fontSize:12,justifyContent:"flex-start",gap:6})}><IPlus sz={12}/>New group</button>
+
+          <div style={{height:1,background:C.bd,margin:"6px 8px"}}/>
+          <button className="hov" onClick={function(){nav("profile")}} style={Object.assign({},BT,{width:"100%",padding:"7px 10px",background:"transparent",color:C.t2,border:"none",fontSize:13,justifyContent:"flex-start",gap:8})}><ISettings sz={14}/>Settings</button>
+        </div>
+        <div style={{padding:"8px 8px",borderTop:"1px solid "+C.bd}}>
+          <button className="hov" onClick={onLogout} style={Object.assign({},BT,{width:"100%",padding:8,background:"transparent",color:C.er,border:"none",fontSize:13,justifyContent:"flex-start",gap:8})}><ILogOut sz={14}/>Log Out</button>
+        </div>
+      </div>
+
+      {/* MAIN */}
+      <div style={{flex:1,display:"flex",flexDirection:"column",overflow:"hidden",width:"100%"}}>
+
+        {/* HEADER */}
+        <div style={{padding:"8px 12px",background:C.s1,borderBottom:"1px solid "+C.bd,display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+          {inChat?<button className="hov" onClick={function(){setView("home");clearInterval(pollRef.current)}} style={Object.assign({},BT,{padding:4,background:"transparent",color:C.t2,border:"none"})}><IBack sz={20}/></button>
+          :<button className="hov" onClick={function(){setDrawer(true)}} style={Object.assign({},BT,{padding:4,background:"transparent",color:C.t2,border:"none"})}><IMenu sz={20}/></button>}
+
+          {view==="chat"&&chatTarget?<div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
+            <Badge a={chatTarget.theirAlter} sz={28}/>
+            <div><div style={{fontWeight:600,fontSize:13}}>{chatTarget.theirAlter.name}</div><div style={{fontSize:10,color:C.t2}}>{chatTarget.system.display_name}</div></div>
+          </div>:view==="groupChat"&&activeGroup?<div style={{display:"flex",alignItems:"center",gap:6,flex:1}}>
+            <span style={{fontSize:15}}>{activeGroup.emoji}</span><span style={{fontWeight:600,fontSize:14}}>{activeGroup.name}</span>
+          </div>:<div style={{flex:1,display:"flex",alignItems:"center",gap:6}}>
+            <svg width="16" height="16" viewBox="0 0 56 56"><circle cx="28" cy="28" r="24" fill="none" stroke={C.ac} strokeWidth="2.5" opacity=".5"/><path d="M28 10a18 18 0 0112.73 30.73" fill="none" stroke={C.ac} strokeWidth="2.5" strokeLinecap="round"/></svg>
+            <span style={{fontWeight:800,fontSize:16}}>Plural</span>
+            {pending.length>0&&<span style={{minWidth:16,height:16,borderRadius:8,background:C.er,color:"white",fontSize:9,fontWeight:700,display:"inline-flex",alignItems:"center",justifyContent:"center",padding:"0 4px"}}>{pending.length}</span>}
+          </div>}
+
+          {/* ALWAYS VISIBLE ALTER SWITCHER */}
+          <div className="scrx" style={{display:"flex",gap:3,maxWidth:120}}>
+            {alters.map(function(a){return <div key={a.id} onClick={function(){
+              if(view==="chat"&&chatTarget){
+                // Switch to this alter's conversation with same person
+                switchConvo(a,chatTarget.theirAlter);
+              } else {
+                switchAlter(a);
+              }
+            }} style={{cursor:"pointer",flexShrink:0}}>
+              <Badge a={a} sz={22} on={active.id===a.id}/>
+            </div>})}
+          </div>
+        </div>
+
+        {/* CONVERSATION TABS (in chat only) */}
+        {view==="chat"&&chatTarget&&(function(){
+          var sa=connAlts[chatTarget.system.id]||[];
+          // Current alter's conversations with all their alters
+          var currentTabs=sa.map(function(theirAlt){return{my:chatTarget.myAlter,their:theirAlt}});
+          return <div style={{background:C.s1,borderBottom:"1px solid "+C.bd,flexShrink:0}}>
+            {/* Compact tab bar */}
+            <div style={{display:"flex",alignItems:"center"}}>
+              <div className="scrx" style={{flex:1,display:"flex",gap:0,padding:"0 4px"}}>
+                {currentTabs.map(function(tab){
+                  var isActive=tab.their.id===chatTarget.theirAlter.id;
+                  return <button key={tab.their.id} className="hov" onClick={function(){switchConvo(tab.my,tab.their)}} style={Object.assign({},BT,{padding:"6px 10px",background:isActive?C.s3:"transparent",color:isActive?C.tx:C.t3,border:"none",borderRadius:"8px 8px 0 0",fontSize:11,gap:4,borderBottom:isActive?"2px solid "+tab.their.color:"2px solid transparent",whiteSpace:"nowrap"})}>
+                    <Badge a={tab.their} sz={14}/>{tab.their.name}
+                  </button>
+                })}
+              </div>
+              {/* Expand button to show ALL combos */}
+              <button className="hov" onClick={function(){setChatTabOpen(function(p){return!p})}} style={Object.assign({},BT,{padding:"6px 8px",background:"transparent",color:C.t3,border:"none"})}>
+                <IChevDown sz={14}/>
+              </button>
+            </div>
+            {/* Expanded: all my alters × all their alters */}
+            {chatTabOpen&&<div className="scr" style={{maxHeight:180,padding:"4px 8px 8px",borderTop:"1px solid "+C.bd,background:C.s2}}>
+              {alters.map(function(myAlt){return <div key={myAlt.id} style={{marginBottom:4}}>
+                <p style={{fontSize:9,color:myAlt.color,fontWeight:700,padding:"3px 4px",textTransform:"uppercase",letterSpacing:1}}>{myAlt.name}</p>
+                <div style={{display:"flex",gap:3,flexWrap:"wrap"}}>
+                  {sa.map(function(theirAlt){
+                    var isActive=chatTarget.myAlter.id===myAlt.id&&chatTarget.theirAlter.id===theirAlt.id;
+                    return <button key={theirAlt.id} className="hov" onClick={function(){switchConvo(myAlt,theirAlt)}} style={Object.assign({},BT,{padding:"4px 8px",background:isActive?C.s4:C.s3,color:isActive?C.tx:C.t2,border:isActive?"1px solid "+theirAlt.color:"1px solid transparent",borderRadius:6,fontSize:11,gap:3})}>
+                      <Badge a={theirAlt} sz={14}/>{theirAlt.name}
+                    </button>
+                  })}
+                </div>
+              </div>})}
+            </div>}
+          </div>
+        })()}
+
+        {/* CONTENT */}
+        <div className="scr" style={{flex:1}}>
+
+          {/* HOME */}
+          {view==="home"&&<div className="fi">
+            {pending.length>0&&<div style={{padding:"10px 12px 0"}}><p style={{fontSize:9,color:C.er,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700,marginBottom:5}}>Requests</p>
+              {pending.map(function(p){return <div key={p.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"8px 10px",background:C.s2,borderRadius:8,marginBottom:3}}>
+                <span style={{fontWeight:500,fontSize:13}}>{p.otherSystem?p.otherSystem.display_name:""}</span>
+                <div style={{display:"flex",gap:3}}><button className="hov" onClick={function(){acceptReq(p.id)}} style={Object.assign({},BT,{padding:"4px 10px",background:C.ok,color:"#0a0b10",fontSize:11})}>Accept</button><button className="hov" onClick={function(){rejectReq(p.id)}} style={Object.assign({},BT,{padding:"4px 6px",background:C.s3,color:C.t2,fontSize:11})}><IX sz={11}/></button></div>
+              </div>})}
+            </div>}
+            <div style={{padding:12}}>
+              {sortedConns.length===0&&groups.length===0?<div style={{textAlign:"center",padding:28,color:C.t3}}><IMsg sz={32} c={C.t3}/><p style={{marginTop:8,fontSize:13}}>No conversations yet</p><p style={{fontSize:11,marginTop:3}}>Swipe right to open menu</p></div>
+              :<div>
+                {sortedConns.map(function(conn){var s=conn.otherSystem,sa=connAlts[s.id]||[],lm=lastMsgs[s.id];
+                  return <div key={conn.id} className="hov" onClick={function(){openDMDefault(s)}} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 10px",borderRadius:10,cursor:"pointer",marginBottom:1}}>
+                    <div style={{width:40,height:40,borderRadius:"50%",background:C.s3,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,fontWeight:700,color:C.t2}}>{s.display_name.charAt(0)}</div>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><span style={{fontWeight:600,fontSize:13}}>{s.display_name}</span>{lm&&<span style={{fontSize:9,color:C.t3}}>{ago(lm.created_at)}</span>}</div>
+                      <p style={{fontSize:11,color:C.t3,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginTop:1}}>{lm?lm.content.substring(0,35)+(lm.content.length>35?"...":""):sa.length+" alter"+(sa.length!==1?"s":"")}</p>
+                    </div>
+                  </div>
+                })}
+                {groups.length>0&&groups.map(function(g){return <div key={g.id} className="hov" onClick={function(){openGrp(g)}} style={{display:"flex",alignItems:"center",gap:10,padding:"9px 10px",borderRadius:10,cursor:"pointer",marginBottom:1}}>
+                  <div style={{width:40,height:40,borderRadius:"50%",background:g.color+"22",display:"flex",alignItems:"center",justifyContent:"center",fontSize:18}}>{g.emoji}</div>
+                  <div style={{fontWeight:600,fontSize:13}}>{g.name}</div>
+                </div>})}
+              </div>}
+            </div>
+          </div>}
+
+          {/* CHAT */}
+          {view==="chat"&&chatTarget&&<div style={{padding:"8px 12px",display:"flex",flexDirection:"column",gap:2}}>
+            {msgs.length===0&&<div style={{textAlign:"center",padding:28,color:C.t3,marginTop:16}}><p style={{fontSize:12}}><span style={{color:chatTarget.myAlter.color,fontWeight:600}}>{chatTarget.myAlter.name}</span>{" + "}<span style={{color:chatTarget.theirAlter.color,fontWeight:600}}>{chatTarget.theirAlter.name}</span></p></div>}
+            {msgs.map(function(m,i){
+              var mine=m.sender_alter_id===chatTarget.myAlter.id;
+              var sa=mine?chatTarget.myAlter:chatTarget.theirAlter;
+              var prev=msgs[i-1];var sameSender=prev&&prev.sender_alter_id===m.sender_alter_id;
+              var prevD=prev?new Date(prev.created_at).toDateString():"";var thisD=new Date(m.created_at).toDateString();
+              return <React.Fragment key={m.id}>
+                {prevD!==thisD&&<div style={{textAlign:"center",padding:"6px 0",margin:"3px 0"}}><span style={{fontSize:9,color:C.t3,background:C.s2,padding:"2px 8px",borderRadius:8,fontWeight:600}}>{dayLabel(m.created_at)}</span></div>}
+                <div style={{display:"flex",justifyContent:mine?"flex-end":"flex-start",marginTop:sameSender?1:5}}>
+                  <div style={{maxWidth:"82%",display:"flex",gap:3,flexDirection:mine?"row-reverse":"row",alignItems:"flex-end"}}>
+                    {!sameSender?<Badge a={sa} sz={18}/>:<div style={{width:18,flexShrink:0}}/>}
+                    <div className="msg-text" onDoubleClick={mine?function(){if(confirm("Delete?"))deleteMsg(m.id)}:undefined} style={{padding:"7px 11px",borderRadius:sameSender?10:12,borderBottomRightRadius:mine?(sameSender?10:3):12,borderBottomLeftRadius:mine?12:(sameSender?10:3),background:mine?sa.color+"25":sa.color+"15",border:"1px solid "+(mine?sa.color+"30":sa.color+"20")}}>
+                      <p style={{fontSize:13,lineHeight:1.4,wordBreak:"break-word"}}>{m.content}</p>
+                      {!sameSender&&<p style={{fontSize:7,color:C.t3,marginTop:2,textAlign:mine?"right":"left"}}>{new Date(m.created_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}</p>}
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment>
+            })}
+            <div ref={endRef}/>
+          </div>}
+
+          {/* GROUP CHAT */}
+          {view==="groupChat"&&activeGroup&&<div style={{padding:"8px 12px",display:"flex",flexDirection:"column",gap:2}}>
+            {msgs.length===0&&<div style={{textAlign:"center",padding:28,color:C.t3}}><span style={{fontSize:24}}>{activeGroup.emoji}</span><p style={{marginTop:4}}>{activeGroup.name}</p></div>}
+            {msgs.map(function(m,i){var mine=alters.some(function(a){return a.id===m.sender_alter_id});var sa=allAlters[m.sender_alter_id]||{name:"?",color:"#888",avatar_emoji:"?"};var prev=msgs[i-1];var sameSender=prev&&prev.sender_alter_id===m.sender_alter_id;var prevD=prev?new Date(prev.created_at).toDateString():"";var thisD=new Date(m.created_at).toDateString();
+              return <React.Fragment key={m.id}>
+                {prevD!==thisD&&<div style={{textAlign:"center",padding:"6px 0"}}><span style={{fontSize:9,color:C.t3,background:C.s2,padding:"2px 8px",borderRadius:8,fontWeight:600}}>{dayLabel(m.created_at)}</span></div>}
+                <div style={{display:"flex",justifyContent:mine?"flex-end":"flex-start",marginTop:sameSender?1:5}}>
+                  <div style={{maxWidth:"82%",display:"flex",gap:3,flexDirection:mine?"row-reverse":"row",alignItems:"flex-end"}}>
+                    {!sameSender?<Badge a={sa} sz={18}/>:<div style={{width:18,flexShrink:0}}/>}
+                    <div className="msg-text" style={{padding:"7px 11px",borderRadius:10,background:mine?sa.color+"25":sa.color+"15",border:"1px solid "+(mine?sa.color+"30":sa.color+"20")}}>
+                      {!sameSender&&<p style={{fontSize:9,color:sa.color,fontWeight:600,marginBottom:1}}>{sa.name}</p>}
+                      <p style={{fontSize:13,lineHeight:1.4,wordBreak:"break-word"}}>{m.content}</p>
+                      {!sameSender&&<p style={{fontSize:7,color:C.t3,marginTop:2}}>{new Date(m.created_at).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"})}</p>}
+                    </div>
+                  </div>
+                </div>
+              </React.Fragment>
+            })}
+            <div ref={endRef}/>
+          </div>}
+
+          {/* ADD CONTACT */}
+          {view==="addContact"&&<div className="fi" style={{padding:12}}>
+            <div style={{background:C.s2,borderRadius:12,padding:14,marginBottom:12,border:"1px solid "+C.bd}}>
+              <p style={{fontSize:9,color:C.t3,marginBottom:3,fontWeight:600,textTransform:"uppercase",letterSpacing:1}}>Your code</p>
+              <div style={{display:"flex",alignItems:"center",gap:6}}><span style={{fontSize:22,fontWeight:800,letterSpacing:5,color:C.ac}}>{sys.system_code}</span><button className="hov" onClick={copyCode} style={{background:"none",border:"none",cursor:"pointer",padding:0,display:"flex"}}><ICopy sz={13} c={C.t2}/></button></div>
+            </div>
+            <div style={{display:"flex",gap:6,marginBottom:12}}>
+              <input placeholder="Code" value={searchCode} onChange={function(e){setSearchCode(e.target.value.toUpperCase())}} maxLength={6} style={Object.assign({},IS,{flex:1,letterSpacing:4,fontWeight:700,textAlign:"center",fontSize:18})} onKeyDown={function(e){if(e.key==="Enter")searchSys()}}/>
+              <button className="hov" onClick={searchSys} disabled={searchLd} style={Object.assign({},BT,{padding:"11px 14px",background:C.ac,color:"#0a0b10"})}>{searchLd?<Spin sz={14}/>:<ISearch sz={15}/>}</button>
+            </div>
+            {searchRes&&<div className="fi" style={{background:C.s2,borderRadius:12,padding:12}}>{searchRes.none?<p style={{color:C.t3,textAlign:"center",fontSize:12}}>Not found</p>:searchRes.self?<p style={{color:C.t3,textAlign:"center",fontSize:12}}>That's you</p>:<div><div style={{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:8}}><div><h3 style={{fontSize:14,fontWeight:600}}>{searchRes.sys.display_name}</h3><p style={{fontSize:10,color:C.t3}}>{searchRes.alts.length} alters</p></div><button className="hov" onClick={function(){sendReq(searchRes.sys.id)}} style={Object.assign({},BT,{fontSize:11,padding:"6px 12px",background:C.ac,color:"#0a0b10",gap:4})}><IPlus sz={11}/>Add</button></div><div style={{display:"flex",gap:4,flexWrap:"wrap"}}>{searchRes.alts.map(function(a){return <div key={a.id} style={{display:"flex",alignItems:"center",gap:3,padding:"2px 6px 2px 2px",background:C.s3,borderRadius:12}}><Badge a={a} sz={16}/><span style={{fontSize:10}}>{a.name}</span></div>})}</div></div>}</div>}
+          </div>}
+
+          {/* ADD ALTER */}
+          {view==="addAlter"&&<div className="fi" style={{padding:12}}>
+            <h2 style={{fontSize:17,fontWeight:600,marginBottom:14}}>New Alter</h2>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <input placeholder="Name" value={newAlt.name} onChange={function(e){setNewAlt(function(p){return Object.assign({},p,{name:e.target.value})})}} style={IS}/>
+              <input placeholder="Pronouns" value={newAlt.pronouns} onChange={function(e){setNewAlt(function(p){return Object.assign({},p,{pronouns:e.target.value})})}} style={IS}/>
+              <div><p style={{fontSize:10,color:C.t2,marginBottom:4}}>Color</p><div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{COLS.map(function(c){return <div key={c} onClick={function(){setNewAlt(function(p){return Object.assign({},p,{color:c})})}} style={{width:20,height:20,borderRadius:"50%",background:c,cursor:"pointer",border:newAlt.color===c?"2px solid white":"2px solid transparent"}}/>})}</div></div>
+              <div><p style={{fontSize:10,color:C.t2,marginBottom:4}}>Emoji</p><div className="scr" style={{display:"flex",gap:2,flexWrap:"wrap",maxHeight:120}}>{EMO.map(function(em){return <div key={em} onClick={function(){setNewAlt(function(p){return Object.assign({},p,{avatar_emoji:em})})}} style={{width:26,height:26,borderRadius:4,display:"flex",alignItems:"center",justifyContent:"center",fontSize:13,cursor:"pointer",background:newAlt.avatar_emoji===em?C.s3:"transparent"}}>{em}</div>})}</div></div>
+              <button className="hov" onClick={addAlterFn} disabled={!newAlt.name.trim()} style={Object.assign({},BT,{background:C.ac,color:"#0a0b10",opacity:newAlt.name.trim()?1:.4})}>Add Alter</button>
+            </div>
+          </div>}
+
+          {/* ADD GROUP */}
+          {view==="addGroup"&&<div className="fi" style={{padding:12}}>
+            <h2 style={{fontSize:17,fontWeight:600,marginBottom:14}}>New Group</h2>
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <input placeholder="Group name" value={newGroup.name} onChange={function(e){setNewGroup(function(p){return Object.assign({},p,{name:e.target.value})})}} style={IS}/>
+              <div><p style={{fontSize:10,color:C.t2,marginBottom:4}}>Emoji</p><div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{GEMO.map(function(em){return <div key={em} onClick={function(){setNewGroup(function(p){return Object.assign({},p,{emoji:em})})}} style={{width:30,height:30,borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",fontSize:15,cursor:"pointer",background:newGroup.emoji===em?C.s3:"transparent"}}>{em}</div>})}</div></div>
+              <div><p style={{fontSize:10,color:C.t2,marginBottom:4}}>Color</p><div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{COLS.map(function(c){return <div key={c} onClick={function(){setNewGroup(function(p){return Object.assign({},p,{color:c})})}} style={{width:20,height:20,borderRadius:"50%",background:c,cursor:"pointer",border:newGroup.color===c?"2px solid white":"2px solid transparent"}}/>})}</div></div>
+              {conns.length>0&&<div><p style={{fontSize:10,color:C.t2,marginBottom:4}}>Systems</p>{conns.map(function(c){var s=c.otherSystem;var sel=newGroup.members.indexOf(s.id)>-1;return <div key={s.id} className="hov" onClick={function(){setNewGroup(function(p){return Object.assign({},p,{members:sel?p.members.filter(function(x){return x!==s.id}):p.members.concat([s.id])})})}} style={{display:"flex",alignItems:"center",gap:8,padding:"7px 8px",borderRadius:6,cursor:"pointer",background:sel?C.ac+"15":"transparent"}}><div style={{width:16,height:16,borderRadius:3,border:"2px solid "+(sel?C.ac:C.bd),background:sel?C.ac:"transparent",display:"flex",alignItems:"center",justifyContent:"center"}}>{sel&&<ICheck sz={8} c="#0a0b10"/>}</div><span style={{fontSize:12}}>{s.display_name}</span></div>})}</div>}
+              <button className="hov" onClick={createGroup} disabled={!newGroup.name.trim()} style={Object.assign({},BT,{background:C.ac,color:"#0a0b10",opacity:newGroup.name.trim()?1:.4})}>Create Group</button>
+            </div>
+          </div>}
+
+          {/* PROFILE */}
+          {view==="profile"&&<div className="fi" style={{padding:12}}>
+            <div style={{background:C.s2,borderRadius:12,padding:16,marginBottom:12,border:"1px solid "+C.bd}}>
+              <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}><Badge a={active} sz={44} on/><div><h2 style={{fontSize:16,fontWeight:700}}>{sys.display_name}</h2><p style={{fontSize:11,color:C.t2}}>{alters.length} alters · {conns.length} connections</p></div></div>
+              <div style={{display:"flex",alignItems:"center",gap:6,background:C.s1,borderRadius:6,padding:"6px 10px"}}><span style={{fontSize:9,color:C.t3,fontWeight:600}}>CODE</span><span style={{fontWeight:700,letterSpacing:3,color:C.ac,fontSize:14,flex:1}}>{sys.system_code}</span><button className="hov" onClick={copyCode} style={{background:"none",border:"none",cursor:"pointer",padding:0,display:"flex"}}><ICopy sz={12} c={C.t2}/></button></div>
+            </div>
+            <p style={{fontSize:9,color:C.t3,textTransform:"uppercase",letterSpacing:1.5,marginBottom:6,fontWeight:700}}>Alters</p>
+            {alters.map(function(a){return <div key={a.id} style={{display:"flex",alignItems:"center",gap:8,padding:"8px 10px",background:C.s2,borderRadius:8,marginBottom:3,border:active.id===a.id?"1px solid "+a.color+"44":"1px solid transparent"}}>
+              <Badge a={a} sz={32} on={active.id===a.id}/><div style={{flex:1}}><span style={{fontWeight:600,fontSize:13}}>{a.name}</span>{a.pronouns&&<span style={{fontSize:10,color:C.t3,marginLeft:4}}>{a.pronouns}</span>}</div>
+              <button className="hov" onClick={function(){setEditing(Object.assign({},a))}} style={Object.assign({},BT,{padding:4,background:"transparent",border:"none",color:C.t2})}><IEdit sz={12}/></button>
+              {alters.length>1&&<button className="hov" onClick={function(){if(confirm("Remove "+a.name+"?"))delAlter(a.id)}} style={Object.assign({},BT,{padding:4,background:"transparent",border:"none",color:C.er})}><ITrash sz={12}/></button>}
+            </div>})}
+          </div>}
+        </div>
+
+        {/* MSG INPUT */}
+        {inChat&&<div style={{padding:"7px 10px",background:C.s1,borderTop:"1px solid "+C.bd,display:"flex",gap:5,flexShrink:0}}>
+          <input value={msgIn} onChange={function(e){setMsgIn(e.target.value)}} placeholder={"Message as "+(view==="chat"&&chatTarget?chatTarget.myAlter.name:active.name)+"..."}
+            style={Object.assign({},IS,{flex:1,borderColor:(view==="chat"&&chatTarget?chatTarget.myAlter.color:active.color)+"30",padding:"9px 12px",borderRadius:20,background:C.s2})}
+            onFocus={function(e){e.target.style.borderColor=(view==="chat"&&chatTarget?chatTarget.myAlter:active).color}} onBlur={function(e){e.target.style.borderColor=(view==="chat"&&chatTarget?chatTarget.myAlter:active).color+"30"}}
+            onKeyDown={function(e){if(e.key==="Enter"){view==="chat"?sendDM():sendGM()}}}/>
+          <button className="hov" onClick={view==="chat"?sendDM:sendGM} disabled={!msgIn.trim()||sending}
+            style={Object.assign({},BT,{padding:"9px 12px",background:(view==="chat"&&chatTarget?chatTarget.myAlter:active).color,color:"#0a0b10",borderRadius:20,opacity:msgIn.trim()&&!sending?1:.3})}><ISend sz={15}/></button>
+        </div>}
+      </div>
+
+      {/* EDIT MODAL */}
+      {editing&&<div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.8)",display:"flex",alignItems:"flex-end",justifyContent:"center",zIndex:100}} onClick={function(){setEditing(null)}}>
+        <div className="pop" onClick={function(e){e.stopPropagation()}} style={{background:C.s1,borderRadius:"18px 18px 0 0",padding:20,width:"100%",maxWidth:400,border:"1px solid "+C.bd,borderBottom:"none",maxHeight:"80vh",overflow:"auto"}}>
+          <div style={{width:32,height:3,borderRadius:2,background:C.bd,margin:"0 auto 14px"}}/>
+          <h3 style={{fontSize:15,fontWeight:600,marginBottom:12}}>Edit {editing.name}</h3>
+          <div style={{display:"flex",flexDirection:"column",gap:8}}>
+            <input value={editing.name} onChange={function(e){setEditing(function(p){return Object.assign({},p,{name:e.target.value})})}} style={IS}/>
+            <input value={editing.pronouns||""} onChange={function(e){setEditing(function(p){return Object.assign({},p,{pronouns:e.target.value})})}} placeholder="Pronouns" style={IS}/>
+            <div><p style={{fontSize:10,color:C.t2,marginBottom:4}}>Color</p><div style={{display:"flex",gap:3,flexWrap:"wrap"}}>{COLS.map(function(c){return <div key={c} onClick={function(){setEditing(function(p){return Object.assign({},p,{color:c})})}} style={{width:20,height:20,borderRadius:"50%",background:c,cursor:"pointer",border:editing.color===c?"2px solid white":"2px solid transparent"}}/>})}</div></div>
+            <div><p style={{fontSize:10,color:C.t2,marginBottom:4}}>Emoji</p><div className="scr" style={{display:"flex",gap:2,flexWrap:"wrap",maxHeight:90}}>{EMO.map(function(em){return <div key={em} onClick={function(){setEditing(function(p){return Object.assign({},p,{avatar_emoji:em})})}} style={{width:24,height:24,borderRadius:3,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,cursor:"pointer",background:editing.avatar_emoji===em?C.s3:"transparent"}}>{em}</div>})}</div></div>
+            <div style={{display:"flex",gap:6,marginTop:6}}>
+              <button className="hov" onClick={function(){setEditing(null)}} style={Object.assign({},BT,{flex:1,background:"transparent",color:C.t2,border:"1px solid "+C.bd})}>Cancel</button>
+              <button className="hov" onClick={saveEdit} style={Object.assign({},BT,{flex:1,background:C.ac,color:"#0a0b10"})}>Save</button>
+            </div>
+          </div>
+        </div>
+      </div>}
+    </div>
+  )
+}
+
+// ===== ROOT WITH TOKEN REFRESH =====
+function App(){
+  var _s=useState(null),session=_s[0],setSession=_s[1];var _sys=useState(null),sys=_sys[0],setSys=_sys[1];var _alts=useState(null),alts=_alts[0],setAlts=_alts[1];var _ld=useState(true),loading=_ld[0],setLoading=_ld[1];
+
+  // Try refresh token if auth fails
+  var tryRefresh=useCallback(async function(){
+    var saved=LS.g("plural_session");
+    if(!saved||!saved.refresh_token)return;
+    try{
+      var d=await A.refresh(saved.refresh_token);
+      var newSession={access_token:d.access_token,refresh_token:d.refresh_token,user:d.user};
+      LS.s("plural_session",newSession);setSession(newSession);
+    }catch(e){LS.d("plural_session");setSession(null);setSys(null);setAlts(null)}
+  },[]);
+
+  // Auto-refresh token every 30 min
+  useEffect(function(){var iv=setInterval(function(){var saved=LS.g("plural_session");if(saved&&saved.refresh_token){A.refresh(saved.refresh_token).then(function(d){var ns={access_token:d.access_token,refresh_token:d.refresh_token,user:d.user};LS.s("plural_session",ns);setSession(ns)}).catch(function(){})}},1800000);return function(){clearInterval(iv)}},[]);
+
+  useEffect(function(){
+    var saved=LS.g("plural_session");
+    if(saved){(async function(){
+      try{
+        var s=await A.g("systems","user_id=eq."+saved.user.id,saved.access_token);
+        if(s.length>0){var a=await A.g("alters","system_id=eq."+s[0].id+"&order=created_at.asc",saved.access_token);setSession(saved);setSys(s[0]);setAlts(a)}
+        else setSession(saved);
+      }catch(e){
+        // Try refresh on auth failure
+        if(saved.refresh_token){try{
+          var d=await A.refresh(saved.refresh_token);
+          var ns={access_token:d.access_token,refresh_token:d.refresh_token,user:d.user};
+          LS.s("plural_session",ns);
+          var s2=await A.g("systems","user_id=eq."+ns.user.id,ns.access_token);
+          if(s2.length>0){var a2=await A.g("alters","system_id=eq."+s2[0].id+"&order=created_at.asc",ns.access_token);setSession(ns);setSys(s2[0]);setAlts(a2)}
+          else setSession(ns);
+        }catch(e2){LS.d("plural_session")}}
+        else LS.d("plural_session");
+      }
+      setLoading(false);
+    })()}else setLoading(false)
+  },[]);
+
+  var handleAuth=useCallback(async function(d){
+    var sess={access_token:d.access_token,refresh_token:d.refresh_token,user:d.user};
+    setSession(sess);LS.s("plural_session",sess);
+    try{var s=await A.g("systems","user_id=eq."+d.user.id,d.access_token);if(s.length>0){setSys(s[0]);var a=await A.g("alters","system_id=eq."+s[0].id+"&order=created_at.asc",d.access_token);setAlts(a)}}catch(e){}
+    setLoading(false);
+  },[]);
+
+  var logout=function(){LS.d("plural_session");setSession(null);setSys(null);setAlts(null)};
+
+  if(loading)return <div style={{height:"100%",display:"flex",alignItems:"center",justifyContent:"center",background:C.bg}}><Spin sz={28}/></div>;
+  if(!session)return <Auth onAuth={handleAuth}/>;
+  if(!sys||!alts||!alts.length)return <Setup token={session.access_token} userId={session.user.id} onDone={function(s,a){setSys(s);setAlts(a)}}/>;
+  return <Main session={session} system={sys} alters={alts} onLogout={logout} onRefresh={tryRefresh}/>
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>
